@@ -46,7 +46,19 @@ export enum RubberBandPresetOption {
   PercussiveOptions = 0x00102000,
 }
 
+export enum RubberBandLiveOption {
+  RubberBandLiveOptionWindowShort = 0x00000000,
+  RubberBandLiveOptionWindowMedium = 0x00100000,
+
+  RubberBandLiveOptionFormantShifted = 0x00000000,
+  RubberBandLiveOptionFormantPreserved = 0x01000000,
+
+  RubberBandLiveOptionChannelsApart = 0x00000000,
+  RubberBandLiveOptionChannelsTogether = 0x10000000,
+}
+
 export type RubberBandState = number;
+export type RubberBandLiveState = number;
 
 export class RubberBandInterface {
   private wasm: { heap: { HEAP8: Uint8Array; HEAP32: Uint32Array }; exports: any };
@@ -170,6 +182,10 @@ export class RubberBandInterface {
     this.wasm.exports.rb_reset(state);
   }
 
+  rubberband_get_engine_version(state: RubberBandState): number {
+    return this.wasm.exports.rb_get_engine_version(state);
+  }
+
   rubberband_set_time_ratio(state: RubberBandState, ratio: number) {
     this.wasm.exports.rb_set_time_ratio(state, ratio);
   }
@@ -276,5 +292,67 @@ export class RubberBandInterface {
 
   rubberband_set_default_debug_level(level: number) {
     this.wasm.exports.rb_set_default_debug_level(level);
+  }
+
+  // RubberBandLiveShifter — real-time pitch shifter introduced in Rubber Band 4.0.
+
+  rubberband_live_new(
+    sampleRate: number,
+    channels: number,
+    options: RubberBandLiveOption
+  ): RubberBandLiveState {
+    return this.wasm.exports.rb_live_new(sampleRate, channels, options);
+  }
+
+  rubberband_live_delete(state: RubberBandLiveState) {
+    this.wasm.exports.rb_live_delete(state);
+  }
+
+  rubberband_live_reset(state: RubberBandLiveState) {
+    this.wasm.exports.rb_live_reset(state);
+  }
+
+  rubberband_live_set_pitch_scale(state: RubberBandLiveState, scale: number) {
+    this.wasm.exports.rb_live_set_pitch_scale(state, scale);
+  }
+
+  rubberband_live_get_pitch_scale(state: RubberBandLiveState): number {
+    return this.wasm.exports.rb_live_get_pitch_scale(state);
+  }
+
+  rubberband_live_set_formant_scale(state: RubberBandLiveState, scale: number) {
+    this.wasm.exports.rb_live_set_formant_scale(state, scale);
+  }
+
+  rubberband_live_get_formant_scale(state: RubberBandLiveState): number {
+    return this.wasm.exports.rb_live_get_formant_scale(state);
+  }
+
+  rubberband_live_get_start_delay(state: RubberBandLiveState): number {
+    return this.wasm.exports.rb_live_get_start_delay(state);
+  }
+
+  rubberband_live_set_formant_option(state: RubberBandLiveState, options: RubberBandLiveOption) {
+    this.wasm.exports.rb_live_set_formant_option(state, options);
+  }
+
+  rubberband_live_get_block_size(state: RubberBandLiveState): number {
+    return this.wasm.exports.rb_live_get_block_size(state);
+  }
+
+  rubberband_live_shift(state: RubberBandLiveState, input: number, output: number) {
+    this.wasm.exports.rb_live_shift(state, input, output);
+  }
+
+  rubberband_live_get_channel_count(state: RubberBandLiveState): number {
+    return this.wasm.exports.rb_live_get_channel_count(state);
+  }
+
+  rubberband_live_set_debug_level(state: RubberBandLiveState, level: number) {
+    this.wasm.exports.rb_live_set_debug_level(state, level);
+  }
+
+  rubberband_live_set_default_debug_level(level: number) {
+    this.wasm.exports.rb_live_set_default_debug_level(level);
   }
 }
