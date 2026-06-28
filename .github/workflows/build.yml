@@ -2,10 +2,9 @@ name: Build
 
 on:
   push:
-    # branches:
-    #   - "!*"
-    # tags:
-    #   - "v*"
+
+permissions:
+  contents: read
 
 jobs:
   build-wasm:
@@ -35,30 +34,3 @@ jobs:
 
       - name: Build TypeScript types
         run: npm run build-types
-
-      - name: Deploy to 'binaries' branch
-        if: success()
-        uses: crazy-max/ghaction-github-pages@v3
-        with:
-          target_branch: binaries
-          build_dir: dist
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Copy required files to demo
-        run: cp dist/index.umd.min.js demo/rubberband.umd.min.js && cp dist/rubberband-processor.min.js demo/rubberband-processor.js && cp dist/rubberband.wasm demo/rubberband.wasm
-
-      - name: Deploy demo to 'gh-pages' branch
-        if: success()
-        uses: crazy-max/ghaction-github-pages@v3
-        with:
-          target_branch: gh-pages
-          build_dir: demo
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
-
-      - run: npm publish
-        env:
-          CI: true

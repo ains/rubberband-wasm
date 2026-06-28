@@ -1,10 +1,10 @@
 # rubberband-wasm
 
-WebAssembly build of the audio time-stretching and pitch-shifting [Rubber Band Library](https://breakfastquay.com/rubberband/)
+WebAssembly build of the audio time-stretching and pitch-shifting [Rubber Band Library](https://breakfastquay.com/rubberband/). This is a fork of [Dani Biró's rubberband-wasm](https://github.com/Daninet/rubberband-wasm).
 
 # Usage
 
-See [demo app](https://daninet.github.io/rubberband-wasm/).
+See [demo app](https://ains.github.io/rubberband-wasm/).
 
 ## Real-time API (Web Audio)
 
@@ -22,17 +22,17 @@ const ctx = new AudioContext();
 const node = await RubberBandNode.create(ctx, {
   // The standalone worklet bundle and the wasm, served by your app:
   processorUrl: "rubberband-processor.js", // dist/rubberband-processor.js
-  wasmUrl: "rubberband.wasm",              // dist/rubberband.wasm
+  wasmUrl: "rubberband.wasm", // dist/rubberband.wasm
   channelCount: audioBuffer.numberOfChannels,
 });
 
 node.connect(ctx.destination);
-node.setBuffer(audioBuffer);      // an AudioBuffer or Float32Array[] (copied, not consumed)
+node.setBuffer(audioBuffer); // an AudioBuffer or Float32Array[] (copied, not consumed)
 
-node.setTempo(1.5);               // 1.5x speed, pitch unchanged
-node.setPitchSemitones(-3);       // down 3 semitones, tempo unchanged
+node.setTempo(1.5); // 1.5x speed, pitch unchanged
+node.setPitchSemitones(-3); // down 3 semitones, tempo unchanged
 node.loop = true;
-node.play();                      // play() / pause() / stop() / seek(seconds)
+node.play(); // play() / pause() / stop() / seek(seconds)
 
 node.onended = () => console.log("done");
 ```
