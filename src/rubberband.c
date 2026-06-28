@@ -22,6 +22,8 @@ EMSCRIPTEN_KEEPALIVE void rb_delete(RubberBandState state) { rubberband_delete(s
 
 EMSCRIPTEN_KEEPALIVE void rb_reset(RubberBandState state) { rubberband_reset(state); }
 
+EMSCRIPTEN_KEEPALIVE int rb_get_engine_version(RubberBandState state) { return rubberband_get_engine_version(state); }
+
 EMSCRIPTEN_KEEPALIVE void rb_set_time_ratio(RubberBandState state, double ratio) { rubberband_set_time_ratio(state, ratio); }
 EMSCRIPTEN_KEEPALIVE void rb_set_pitch_scale(RubberBandState state, double scale) { rubberband_set_pitch_scale(state, scale); }
 EMSCRIPTEN_KEEPALIVE void rb_set_formant_scale(RubberBandState state, double scale) { rubberband_set_formant_scale(state, scale); }
@@ -60,3 +62,32 @@ EMSCRIPTEN_KEEPALIVE void rb_calculate_stretch(RubberBandState state) { rubberba
 
 EMSCRIPTEN_KEEPALIVE void rb_set_debug_level(RubberBandState state, int level) { rubberband_set_debug_level(state, level); }
 EMSCRIPTEN_KEEPALIVE void rb_set_default_debug_level(int level) { rubberband_set_default_debug_level(level); }
+
+// RubberBandLiveShifter — real-time pitch shifter introduced in Rubber Band 4.0.
+
+EMSCRIPTEN_KEEPALIVE RubberBandLiveState rb_live_new(unsigned int sampleRate, unsigned int channels, RubberBandOptions options) {
+  return rubberband_live_new(sampleRate, channels, options);
+}
+
+EMSCRIPTEN_KEEPALIVE void rb_live_delete(RubberBandLiveState state) { rubberband_live_delete(state); }
+
+EMSCRIPTEN_KEEPALIVE void rb_live_reset(RubberBandLiveState state) { rubberband_live_reset(state); }
+
+EMSCRIPTEN_KEEPALIVE void rb_live_set_pitch_scale(RubberBandLiveState state, double scale) { rubberband_live_set_pitch_scale(state, scale); }
+EMSCRIPTEN_KEEPALIVE double rb_live_get_pitch_scale(const RubberBandLiveState state) { return rubberband_live_get_pitch_scale(state); }
+
+EMSCRIPTEN_KEEPALIVE void rb_live_set_formant_scale(RubberBandLiveState state, double scale) { rubberband_live_set_formant_scale(state, scale); }
+EMSCRIPTEN_KEEPALIVE double rb_live_get_formant_scale(const RubberBandLiveState state) { return rubberband_live_get_formant_scale(state); }
+
+EMSCRIPTEN_KEEPALIVE unsigned int rb_live_get_start_delay(const RubberBandLiveState state) { return rubberband_live_get_start_delay(state); }
+
+EMSCRIPTEN_KEEPALIVE void rb_live_set_formant_option(RubberBandLiveState state, RubberBandOptions options) { rubberband_live_set_formant_option(state, options); }
+
+EMSCRIPTEN_KEEPALIVE unsigned int rb_live_get_block_size(RubberBandLiveState state) { return rubberband_live_get_block_size(state); }
+
+EMSCRIPTEN_KEEPALIVE void rb_live_shift(RubberBandLiveState state, const float *const *input, float *const *output) { rubberband_live_shift(state, input, output); }
+
+EMSCRIPTEN_KEEPALIVE unsigned int rb_live_get_channel_count(const RubberBandLiveState state) { return rubberband_live_get_channel_count(state); }
+
+EMSCRIPTEN_KEEPALIVE void rb_live_set_debug_level(RubberBandLiveState state, int level) { rubberband_live_set_debug_level(state, level); }
+EMSCRIPTEN_KEEPALIVE void rb_live_set_default_debug_level(int level) { rubberband_live_set_default_debug_level(level); }
