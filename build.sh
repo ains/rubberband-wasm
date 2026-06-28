@@ -25,7 +25,7 @@ emcc ${CXXFLAGS} -c lib/rubberband/single/RubberBandSingle.cpp -o lib/librubberb
 emcc ${CXXFLAGS} -c src/rubberband.c -o lib/rubberband.o
 
 export EMCC_FLAGS="${LDFLAGS} \
-  -s ENVIRONMENT='web,worker,node' \
+  -s ENVIRONMENT=web,worker,node \
   -s ALLOW_MEMORY_GROWTH=1 \
   -s MODULARIZE=1 \
   -s STANDALONE_WASM=1 \
