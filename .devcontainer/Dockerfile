@@ -1,4 +1,4 @@
-FROM emscripten/emsdk:3.1.14
+FROM emscripten/emsdk:6.0.1
 
 # RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
 #     && apt-get -y install --no-install-recommends <your-package-list-here>
