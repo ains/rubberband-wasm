@@ -1,5 +1,5 @@
 {
-  "name": "rubberband-wasm",
+  "name": "@ainsej/rubberband-wasm",
   "version": "4.0.0",
   "description": "WebAssembly version of the Rubber Band Library (high quality software library for audio time-stretching and pitch-shifting)",
   "main": "dist/index.umd.js",
@@ -37,13 +37,13 @@
     "webassembly"
   ],
   "bugs": {
-    "url": "https://github.com/Daninet/rubberband-wasm/issues"
+    "url": "https://github.com/ains/rubberband-wasm/issues"
   },
-  "homepage": "https://github.com/Daninet/rubberband-wasm#readme",
-  "author": "Dani Biró <danibiro93@gmail.com> (https://danibiro.com)",
+  "homepage": "https://github.com/ains/rubberband-wasm#readme",
+  "author": "Ains <me@ains.co> (https://ains.co)",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Daninet/rubberband-wasm.git"
+    "url": "git+https://github.com/ains/rubberband-wasm.git"
   },
   "license": "GPLv2",
   "devDependencies": {
