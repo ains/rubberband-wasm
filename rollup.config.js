@@ -37,4 +37,16 @@ const getBundleConfig = (minified = false) => ({
   plugins: [nodeResolve(), commonjs(), json(), typescript(), ...(minified ? [terser(TERSER_CONFIG)] : []), license(LICENSE_CONFIG)],
 });
 
-export default [getBundleConfig(false), getBundleConfig(true)];
+// Standalone IIFE bundle for the AudioWorklet processor. It self-registers via
+// registerProcessor() and is loaded by the browser through
+// audioWorklet.addModule(); it must NOT pull in RubberBandNode/AudioWorkletNode.
+const getProcessorConfig = (minified = false) => ({
+  input: "src/RubberBandProcessor.ts",
+  output: {
+    file: `dist/rubberband-processor${minified ? ".min" : ""}.js`,
+    format: "iife",
+  },
+  plugins: [nodeResolve(), commonjs(), json(), typescript(), ...(minified ? [terser(TERSER_CONFIG)] : []), license(LICENSE_CONFIG)],
+});
+
+export default [getBundleConfig(false), getBundleConfig(true), getProcessorConfig(false), getProcessorConfig(true)];
