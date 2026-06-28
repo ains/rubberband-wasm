@@ -1,0 +1,46 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Rubberband-wasm — real-time</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+  </head>
+
+  <body>
+    <h2>
+      rubberband-wasm — real-time time-stretch &amp; pitch-shift
+      <a href="https://github.com/ains/rubberband-wasm" target="_blank" rel="noreferrer">
+        <img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/ains/rubberband-wasm?style=social" />
+      </a>
+    </h2>
+
+    <p>
+      Plays an audio file through a <code>RubberBandNode</code> (an <code>AudioWorklet</code> source node) and lets you change tempo and pitch
+      <b>live</b> while it plays. <a href="./index.html">← offline demo</a>
+    </p>
+
+    <label>Audio file: <input type="file" id="file" accept="audio/*" /></label>
+    <br /><br /><br />
+
+    <label>Pitch: <input type="range" id="pitch" min="-12" max="12" value="0" step="1" style="width: 250px" /></label>
+    <span id="pitchLabel">0 st</span>
+    <br /><br />
+
+    <label>Tempo: <input type="range" id="tempo" min="0.5" max="2" value="1" step="0.01" style="width: 250px" /></label>
+    <span id="tempoLabel">100%</span>
+    <br /><br />
+
+    <label><input type="checkbox" id="loop" /> Loop</label>
+    <br /><br />
+
+    <button type="button" id="play" disabled>Play</button>
+    <button type="button" id="pause" disabled>Pause</button>
+    <button type="button" id="stop" disabled>Stop</button>
+    <br /><br />
+
+    <pre id="status">Select an audio file to begin.</pre>
+
+    <script src="./rubberband.umd.min.js"></script>
+    <script src="./realtime.js"></script>
+  </body>
+</html>
