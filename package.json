@@ -5,6 +5,18 @@
   "main": "dist/index.umd.js",
   "module": "dist/index.esm.js",
   "types": "dist/types/index.d.ts",
+  "files": [
+    "dist/index.umd.js",
+    "dist/index.umd.min.js",
+    "dist/index.esm.js",
+    "dist/index.esm.min.js",
+    "dist/rubberband-processor.js",
+    "dist/rubberband-processor.min.js",
+    "dist/rubberband.wasm",
+    "dist/types",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "build-bindings": "sh -c ./build.sh",
     "build-rollup": "rollup -c",

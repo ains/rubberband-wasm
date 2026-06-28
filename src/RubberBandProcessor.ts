@@ -56,6 +56,7 @@ class RubberBandProcessor extends AudioWorkletProcessor {
   private endedPosted = false;
   private startPad = 0; // leading silent input frames still to inject
   private toDrop = 0; // output frames still to discard (start delay)
+  private needStart = true; // start pad/delay must be (re)computed on next pump
 
   // ratios (user-facing)
   private speed = 1; // playback speed; timeRatio = rateFactor / speed
@@ -128,7 +129,13 @@ class RubberBandProcessor extends AudioWorkletProcessor {
       // here. (A pre-compiled Module is also accepted, e.g. for non-worklet use.)
       const w = msg.wasm;
       const mod = w instanceof WebAssembly.Module ? w : await WebAssembly.compile(w);
+      if (this.closed) return;
       this.rb = await RubberBandInterface.initialize(mod);
+      // A 'close' may have arrived while we were awaiting; don't resurrect.
+      if (this.closed) {
+        this.rb = null;
+        return;
+      }
       this.allocate();
       this.createState();
       this.port.postMessage({ type: "ready" });
@@ -198,14 +205,17 @@ class RubberBandProcessor extends AudioWorkletProcessor {
     this.finished = false;
     this.sentFinal = false;
     this.endedPosted = false;
+    this.startPad = 0;
+    this.toDrop = 0;
+    // Defer querying the start pad / delay until the first pump: they depend on
+    // the time/pitch ratios, which may still change (e.g. setBuffer then
+    // setPitch/setTempo) before playback of this segment actually begins.
+    this.needStart = true;
     const rb = this.rb;
     const st = this.state;
     if (rb && st) {
       rb.rubberband_reset(st);
-      // Ratios must be current before querying start pad / delay.
       this.applyRatios();
-      this.startPad = rb.rubberband_get_preferred_start_pad(st);
-      this.toDrop = rb.rubberband_get_start_delay(st);
     }
   }
 
@@ -222,6 +232,14 @@ class RubberBandProcessor extends AudioWorkletProcessor {
     const rb = this.rb;
     const st = this.state;
     if (!rb || !st || this.finished) return;
+
+    if (this.needStart) {
+      // Ratios for this segment are now set; query start pad / delay against them.
+      this.applyRatios();
+      this.startPad = rb.rubberband_get_preferred_start_pad(st);
+      this.toDrop = rb.rubberband_get_start_delay(st);
+      this.needStart = false;
+    }
 
     while (this.ringCount < target && !this.finished && budget-- > 0) {
       const avail = rb.rubberband_available(st);
@@ -388,9 +406,20 @@ class RubberBandProcessor extends AudioWorkletProcessor {
     this.framesSinceReport += n;
     if (this.framesSinceReport >= sampleRate / 30) {
       this.framesSinceReport = 0;
-      this.port.postMessage({ type: "position", seconds: this.readPos / this.sourceSampleRate });
+      this.port.postMessage({ type: "position", seconds: this.audiblePositionSeconds() });
     }
     return true;
+  }
+
+  // The audible source-time playhead: the input read cursor minus the output
+  // still buffered in the ring (converted back to source frames), so it tracks
+  // what the listener actually hears rather than what has been fed in.
+  private audiblePositionSeconds(): number {
+    const bufferedSource = (this.ringCount * this.speed * this.sourceSampleRate) / sampleRate;
+    let frames = this.readPos - bufferedSource;
+    if (frames < 0) frames = this.loop && this.sourceLen ? frames + this.sourceLen : 0;
+    if (frames < 0) frames = 0;
+    return frames / this.sourceSampleRate;
   }
 }
 

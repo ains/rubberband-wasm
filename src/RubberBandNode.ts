@@ -7,7 +7,11 @@ export interface RubberBandNodeOptions {
   wasmUrl?: string;
   /** Pre-fetched wasm binary (compiled inside the worklet). */
   wasmBinary?: ArrayBuffer | Uint8Array;
-  /** Number of output channels (default 2). Sources are up/down-mixed to this. */
+  /**
+   * Number of output channels (default 2). A source with fewer channels is
+   * duplicated up to this count; a source with more has its extra channels
+   * dropped (the first `channelCount` are kept).
+   */
   channelCount?: number;
   /** RubberBand options bitmask (advanced; defaults to a real-time, glitch-free preset). */
   options?: number;
@@ -111,7 +115,12 @@ export class RubberBandNode extends AudioWorkletNode {
     const channels = opts.channelCount && opts.channelCount > 0 ? opts.channelCount : 2;
     const node = new RubberBandNode(context, channels);
     node.port.postMessage({ type: "initialise", wasm: bytes, channels, options: opts.options }, [bytes]);
-    await node._ready;
+    try {
+      await node._ready;
+    } catch (e) {
+      node.close(); // tear down the worklet + free any wasm it allocated
+      throw e;
+    }
     return node;
   }
 
@@ -137,8 +146,9 @@ export class RubberBandNode extends AudioWorkletNode {
     this.port.postMessage({ type: "buffer", channels: chans, sampleRate: rate }, transfer);
   }
 
-  // Up/down-mix to exactly this._channels with distinct backing buffers
-  // (so every entry in the transfer list is unique).
+  // Coerce to exactly this._channels with distinct backing buffers (so every
+  // entry in the transfer list is unique): a source with fewer channels is
+  // duplicated, a source with more has its extra channels dropped.
   private _normalizeChannels(chans: Float32Array[]): Float32Array[] {
     const n = this._channels;
     if (chans.length === n) return chans;
